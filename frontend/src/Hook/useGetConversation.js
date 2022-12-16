@@ -1,28 +1,18 @@
-import { useEffect, useState } from 'react';
+import {useContext} from "react";
+import {userContext} from "../Context/UserContext";
 
+export default function useGetConversation() {
+    const storedUser = useContext(userContext);
 
-export function useGetMessages():  {
-
-  const { jwt } = useSelector((state: AppState) => ({
-    jwt: state.auth,
-  }));
-
-  const fetchMessages = async () => {
-    const res = await fetch('http://localhost:8245/getconversations', {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-
-    if (res) {
-      const data = await res.json();
-      setMessages(data.messages);
+    return function (topic) {
+        return fetch(`http://localhost:8245/getconversations`, {
+            method: 'GET',
+            credentials: 'include',
+            mode: 'cors',
+            headers: {
+                'Authorization': `Basic ${storedUser}`
+            }
+        })
+            .then(res => res.json())
     }
-  };
-
-  useEffect(() => {
-    fetchConversations();
-  }, []);
-
-  return messages;
 }

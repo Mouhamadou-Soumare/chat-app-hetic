@@ -4,7 +4,25 @@ import useGetConversation from "../Hook/useGetConversation";
 
 export default function Conversation() {
    
-  
+  const [userList, setUserList] = useState([]);
+
+  const getUserConversation = useGetConversation();
+
+  useEffect(() => {
+    getUserConversation().then(data => setUserList(data.users));
+
+    const url = new URL('http://localhost:9090/.well-known/mercure');
+    url.searchParams.append('topic', 'https://example.com/my-private-topic');
+
+    const eventSource = new EventSource(url, {withCredentials: true});
+    
+
+    return () => {
+        eventSource.close()
+    }
+
+}, [])
+
     return (
         <div className="w-full px-5 flex flex-col justify-between overflow-auto">
         <div className="flex flex-col mt-5">
